@@ -32,12 +32,29 @@ class Closer{
     /**
      * Group given DateTime considering given Offset
      *
-     * @param DateTimeImmutable[] $dateTimeList
+     * @param DateTimeImmutable[] $dateTimeList sorted from the older (index:0) to the younger (index:>0)
      * @param integer $offset
      * @param CloserArguments $unity
      * @return array of dates groupped by proximity considering offset restrictions
      */
     public static function groupDateTimeArray(array $dateTimeList,int $offset=3,CloserArguments $unity= CloserArguments::MONTHS):array{
+
+        //Amélioration de la lisibilité des conditions
+        //fonction de calcul si la différence entre deux dates dépasse l'offset défini
+        function isDifferenceOverflowingOffset(DateTimeImmutable $date1,DateTimeImmutable $date2,int $timestampOffset):bool
+        {
+            return $date2->getTimestamp() - $date1->getTimestamp() > $timestampOffset;
+        }
+
+        //fonction d'évaluation si la clée est la dernière du tableau
+        function isKeyLastOfArray(array $arrayToTest,int $keyToTest):bool
+        {
+            return $keyToTest == count($arrayToTest)-1;
+        }
+
+        // function arrayShouldBeSorted(array $dateTimeArray){
+
+        // }
 
         //calcul de l'offset en timestamp
         $timestampOffset = self::calculateOffsetTimestamp($offset,$unity);
@@ -55,50 +72,26 @@ class Closer{
                 if($key2 <= $key1){
                     continue;
                 }
-                //vérification des clés testées
                 //si la distance dépasse l'offset ou que nous sommes sur la dernière ittération et que la condition est toujours respectée
-                if($date2->getTimestamp() - $date1->getTimestamp() > $timestampOffset){
+                if(isDifferenceOverflowingOffset($date1,$date2,$timestampOffset) || (isKeyLastOfArray($dateTimeList,$key2) && !isDifferenceOverflowingOffset($date1,$date2,$timestampOffset))){
                     $retainedDates = [];
+                    if(isKeyLastOfArray($dateTimeList,$key2) && !isDifferenceOverflowingOffset($date1,$date2,$timestampOffset)){
+                        $key2 ++;//ce qui revient à changer le signe "<" du for en dessous par un "<="
+                    }
+                    //on va parcourt l'ensemble des dates entre la date1 et la date2
                     for ($i = $key1;$i<$key2;$i++){
+                        //on ajoute les clées au groupe
                         $retainedDates[] = $dateTimeList[$i];
                     }
-                    if (count($retainedDates)>1){
-                        $groups[] = $retainedDates;
-                    }
-                    break;
-                }else if($key2 == count($dateTimeList)-1 && $date2->getTimestamp() - $date1->getTimestamp() <= $timestampOffset){
-                    $retainedDates = [];
-                    for ($i = $key1;$i<=$key2;$i++){
-                        $retainedDates[] = $dateTimeList[$i];
-                    }
-                    if (count($retainedDates)>1){
+                    //si l'échantillon contient au moins 2 dates
+                    if (count($retainedDates)>=2){
+                        //on l'ajoute au groupe
                         $groups[] = $retainedDates;
                     }
                     break;
                 }
 
             }
-            
-
-            // $k = $key;
-            // while(true){
-            //     //si l'écart entre la première date evaluée (du foreach) et la date contenue à $k est > l'offset
-            //     // la partie sur le $k est en prévention d'un bug sur les fins de liste
-            //     if($k > count($dateTimeList) - 1 || $dateTimeList[$k]->getTimestamp() - $date->getTimestamp() > $timestampOffset){
-            //         // on créer un groupe entre la première date évaluée et la celle avant le dépassement de l'offset
-            //         $retainedDates = [];
-            //         //permet de parcourir tous les elements entre le premier élément ($key) et celui qui a fait dépassé l'offset ($k)
-            //         for ($i = $key;$i<$k;$i++){
-            //             $retainedDates[] = $dateTimeList[$i];
-            //         }
-            //         if (count($retainedDates)>1){
-            //             $groups[] = $retainedDates;
-            //         }
-            //         break;
-            //     }
-            //     //A chaque tour du while, on incrémente la clée suppérieure
-            //     $k++;
-            // }
         }
         return $groups;
 
