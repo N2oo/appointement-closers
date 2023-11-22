@@ -8,6 +8,26 @@ use DateTime;
 use DateTimeImmutable;
 
 class Closer{
+
+    /**
+     * @param int $offset
+     * @param CloserArguments $unity
+     * 
+     * @return int calculated offset
+     */
+    private static function calculateOffsetTimestamp(int $offset = 3, CloserArguments $unity = CloserArguments::MONTHS):int
+    {
+        $now = new DateTimeImmutable();
+        $timestampNow = $now->getTimestamp();
+        //AJOUT DE LA PERIODE VARIABLE
+        $dateTimeInterval = new DateInterval(sprintf("P%s%s",$offset,$unity->value));
+        //calcul de la date + offset
+        $dateLater = $now->add($dateTimeInterval);
+        $offsetLater = $dateLater->getTimestamp();
+
+        //calcul de l'offset en timestamp
+        return  $offsetLater - $timestampNow;
+    }
     
     /**
      * Group given DateTime considering given Offset
@@ -18,16 +38,9 @@ class Closer{
      * @return array of dates groupped by proximity considering offset restrictions
      */
     public static function groupDateTimeArray(array $dateTimeList,int $offset=3,CloserArguments $unity= CloserArguments::MONTHS):array{
-        $now = new DateTimeImmutable();
-        $timestampNow = $now->getTimestamp();
-        //AJOUT DE LA PERIODE VARIABLE
-        $dateTimeInterval = new DateInterval(sprintf("P%s%s",$offset,$unity->value));
-        //calcul de la date + offset
-        $dateLater = $now->add($dateTimeInterval);
-        $offsetLater = $dateLater->getTimestamp();
 
         //calcul de l'offset en timestamp
-        $timestampOffset = $offsetLater - $timestampNow;
+        $timestampOffset = self::calculateOffsetTimestamp($offset,$unity);
 
         //Recherche des groupes de proximité
         $groups = [];
