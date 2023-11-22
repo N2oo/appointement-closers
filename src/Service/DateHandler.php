@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use DateTime;
+use DateTimeImmutable;
 
 class DateHandler{
 
@@ -16,7 +17,7 @@ class DateHandler{
         $dataArray = $this->handleJsonArrayToPHPArray($jsonData);
         $serializedDateTimeCustomList = [];
         foreach($dataArray as $dateTimeCustomUnserialized){
-            $newDateTime = (new DateTime())->setDate(
+            $newDateTime = (new DateTimeImmutable())->setDate(
                 $dateTimeCustomUnserialized["year"],
                 $dateTimeCustomUnserialized["month"],
                 $dateTimeCustomUnserialized["day"]
@@ -33,7 +34,7 @@ class DateHandler{
     public function translateDateTimeArrayToTimeStampArray(array $dateTimeArray):array{
         $translatedArray = [];
         /**
-         * @var DateTime $element
+         * @var DateTimeImmutable $element
          */
         foreach($dateTimeArray as $element){
             $translatedArray[] = $element->getTimestamp();

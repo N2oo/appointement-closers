@@ -4,6 +4,7 @@ namespace App\Tests\Service;
 
 use App\Service\DateHandler;
 use DateTime;
+use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class DateHandlerTest extends KernelTestCase
@@ -101,9 +102,9 @@ class DateHandlerTest extends KernelTestCase
             }
           ]
         ',[
-            (new DateTime())->setDate(2023,1,1)->setTime(12,30,45),
-            (new DateTime())->setDate(2023,6,15)->setTime(8,0,0),
-            (new DateTime())->setDate(2023,12,31)->setTime(23,59,59)
+            (new DateTimeImmutable())->setDate(2023,1,1)->setTime(12,30,45),
+            (new DateTimeImmutable())->setDate(2023,6,15)->setTime(8,0,0),
+            (new DateTimeImmutable())->setDate(2023,12,31)->setTime(23,59,59)
         ]]];
     }
 
@@ -111,14 +112,14 @@ class DateHandlerTest extends KernelTestCase
         return [
             [
                 [
-                    (new DateTime())->setDate(2023,1,1)->setTime(12,30,45),
-                    (new DateTime())->setDate(2023,6,15)->setTime(8,0,0),
-                    (new DateTime())->setDate(2023,12,31)->setTime(23,59,59)
+                    (new DateTimeImmutable())->setDate(2023,1,1)->setTime(12,30,45),
+                    (new DateTimeImmutable())->setDate(2023,6,15)->setTime(8,0,0),
+                    (new DateTimeImmutable())->setDate(2023,12,31)->setTime(23,59,59)
                 ],
                 [
-                    (new DateTime())->setDate(2023,1,1)->setTime(12,30,45)->getTimestamp(),
-                    (new DateTime())->setDate(2023,6,15)->setTime(8,0,0)->getTimestamp(),
-                    (new DateTime())->setDate(2023,12,31)->setTime(23,59,59)->getTimestamp()
+                    (new DateTimeImmutable())->setDate(2023,1,1)->setTime(12,30,45)->getTimestamp(),
+                    (new DateTimeImmutable())->setDate(2023,6,15)->setTime(8,0,0)->getTimestamp(),
+                    (new DateTimeImmutable())->setDate(2023,12,31)->setTime(23,59,59)->getTimestamp()
                 ]
             ]
         ];
@@ -128,14 +129,14 @@ class DateHandlerTest extends KernelTestCase
         return [
             [
                 [
-                    (new DateTime())->setDate(2023,12,31)->setTime(23,59,59)->getTimestamp(),
-                    (new DateTime())->setDate(2023,1,1)->setTime(12,30,45)->getTimestamp(),
-                    (new DateTime())->setDate(2023,6,15)->setTime(8,0,0)->getTimestamp(),
+                    (new DateTimeImmutable())->setDate(2023,12,31)->setTime(23,59,59)->getTimestamp(),
+                    (new DateTimeImmutable())->setDate(2023,1,1)->setTime(12,30,45)->getTimestamp(),
+                    (new DateTimeImmutable())->setDate(2023,6,15)->setTime(8,0,0)->getTimestamp(),
                 ],
                 [//expected
-                    (new DateTime())->setDate(2023,1,1)->setTime(12,30,45)->getTimestamp(),
-                    (new DateTime())->setDate(2023,6,15)->setTime(8,0,0)->getTimestamp(),
-                    (new DateTime())->setDate(2023,12,31)->setTime(23,59,59)->getTimestamp()
+                    (new DateTimeImmutable())->setDate(2023,1,1)->setTime(12,30,45)->getTimestamp(),
+                    (new DateTimeImmutable())->setDate(2023,6,15)->setTime(8,0,0)->getTimestamp(),
+                    (new DateTimeImmutable())->setDate(2023,12,31)->setTime(23,59,59)->getTimestamp()
                 ]
             ]
         ];
