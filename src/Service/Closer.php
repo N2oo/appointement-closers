@@ -8,8 +8,6 @@ use DateTime;
 use DateTimeImmutable;
 use InvalidArgumentException;
 
-use function PHPUnit\Framework\isInstanceOf;
-
 class Closer
 {
 
@@ -58,7 +56,15 @@ class Closer
         return $keyToTest == count($arrayToTest) - 1;
     }
 
-    private static function makeDateTimeImmutableArrayValidations(array $dateTimeImmutableArray)
+    /**
+     * fonction de Validation de l'argument tableau
+     * Valide que le tableau ne contient que des elements du type souhaité
+     * Valide que le tableau est ordonné dans le sens attendu
+     *
+     * @param array $dateTimeImmutableArray
+     * @return void
+     */
+    private static function makeDateTimeImmutableArrayValidations(array $dateTimeImmutableArray):void
     {
         $previousDate = null; 
         /**
