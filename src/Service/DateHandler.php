@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use DateTime;
 use DateTimeImmutable;
 
 class DateHandler{
