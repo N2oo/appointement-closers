@@ -5,6 +5,7 @@ namespace App\Tests\Entity\DTO;
 use App\Entity\DTO\DateTimeCustomDTO;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Constraints\Isbn;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Range;
@@ -159,13 +160,39 @@ class DateTimeCustomDTOTest extends KernelTestCase
     public function testShouldGetErrorLeapYear(){
         $validator = $this->getValidator();
 
-        $dateTimeCustom = new DateTimeCustomDTO(29,2,2017,1,1,1);
-        $errors = $validator->validate($dateTimeCustom,new IsTrue(message:"La date soumise n'existe pas, vérifiez si l'année est bissextile"));
+        $dateTimeCustom = new DateTimeCustomDTO(29,2,2017,1,1,1);//année non bissextile
+        $errors = $validator->validate($dateTimeCustom,groups:["leap"]);
         $errorsCount= count($errors);
         $this->assertEquals(1,$errorsCount);
     }
+    public function testShouldNotGetErrorLeapYear(){
+        $validator = $this->getValidator();
+
+        $dateTimeCustom = new DateTimeCustomDTO(29,2,2020,1,1,1);//année bissextile
+        // $errors = $validator->validate($dateTimeCustom,new IsTrue(message:"La date soumise n'existe pas, vérifiez si l'année est bissextile"));
+        $errors = $validator->validate($dateTimeCustom,groups:["leap"]);
+        $errorsCount= count($errors);
+        $this->assertEquals(0,$errorsCount);
+    }
+
+    public function testShouldReturnValidDateTimeObject(){
+        $validator = $this->getValidator();
+        $year = 2020;
+        $month = 2;
+        $day = 29;
+        $hour = $minute = $second = 1;
+
+        $dateTimeCustom = new DateTimeCustomDTO($day,$month,$year,$hour,$minute,$second);
+        $errors = $validator->validate($dateTimeCustom);
+        $errorsCount= count($errors);
+        $this->assertEquals(0,$errorsCount);
+        $expectedDateTimeObject = (new DateTimeImmutable())->setDate($year,$month,$day)->setTime($hour,$minute,$second);
+        $result = $dateTimeCustom->exportToDateTimeImmutable();
+        $this->assertInstanceOf(DateTimeImmutable::class,$result);
+        $this->assertEquals($expectedDateTimeObject,$result);
+    }
 
 
-    
+
 
 }
