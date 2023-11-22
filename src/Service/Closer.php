@@ -6,8 +6,12 @@ use App\Service\Enumeration\CloserArguments;
 use DateInterval;
 use DateTime;
 use DateTimeImmutable;
+use InvalidArgumentException;
 
-class Closer{
+use function PHPUnit\Framework\isInstanceOf;
+
+class Closer
+{
 
     /**
      * @param int $offset
@@ -15,12 +19,12 @@ class Closer{
      * 
      * @return int calculated offset
      */
-    private static function calculateOffsetTimestamp(int $offset = 3, CloserArguments $unity = CloserArguments::MONTHS):int
+    private static function calculateOffsetTimestamp(int $offset = 3, CloserArguments $unity = CloserArguments::MONTHS): int
     {
         $now = new DateTimeImmutable();
         $timestampNow = $now->getTimestamp();
         //AJOUT DE LA PERIODE VARIABLE
-        $dateTimeInterval = new DateInterval(sprintf("P%s%s",$offset,$unity->value));
+        $dateTimeInterval = new DateInterval(sprintf("P%s%s", $offset, $unity->value));
         //calcul de la date + offset
         $dateLater = $now->add($dateTimeInterval);
         $offsetLater = $dateLater->getTimestamp();
@@ -28,7 +32,61 @@ class Closer{
         //calcul de l'offset en timestamp
         return  $offsetLater - $timestampNow;
     }
-    
+
+    /**
+     * fonction de calcul si la différence entre deux dates dépasse l'offset défini
+     *
+     * @param DateTimeImmutable $date1
+     * @param DateTimeImmutable $date2
+     * @param integer $timestampOffset
+     * @return boolean
+     */
+    private static function isDifferenceOverflowingOffset(DateTimeImmutable $date1, DateTimeImmutable $date2, int $timestampOffset): bool
+    {
+        return $date2->getTimestamp() - $date1->getTimestamp() > $timestampOffset;
+    }
+
+    /**
+     * fonction d'évaluation si la clée est la dernière du tableau
+     *
+     * @param array $arrayToTest
+     * @param integer $keyToTest
+     * @return boolean
+     */
+    private static function isKeyLastOfArray(array $arrayToTest, int $keyToTest): bool
+    {
+        return $keyToTest == count($arrayToTest) - 1;
+    }
+
+    private static function arrayShouldBeSortedOlderToYounger(array $dateTimeArray)
+    {
+        $previousDate = null; 
+        /**
+         * @var DateTimeImmutable $testedDate
+         */
+        foreach($dateTimeArray as $testedDate){
+            if(null === $previousDate){
+                $previousDate = $testedDate;
+                continue;
+            }
+            if($testedDate < $previousDate){
+                throw new InvalidArgumentException("La liste soumise n'a pas été ordonnée dans l'ordre attendu");
+            }
+            $previousDate = $testedDate;
+
+        }
+    }
+
+    private static function arrayShouldOnlyContainDateTimeImmutableElements(array $dateTimeArray){
+        foreach($dateTimeArray as $pretentedDateTimeElement){
+            //si ce n'est pas un instance de DateTimeImmutable
+            if(!($pretentedDateTimeElement instanceof DateTimeImmutable)){
+                throw new InvalidArgumentException("La liste soumise ne contient pas uniquement des éléments du type DateTimeImmutable");
+            }
+        }
+    }
+
+
     /**
      * Group given DateTime considering given Offset
      *
@@ -37,27 +95,13 @@ class Closer{
      * @param CloserArguments $unity
      * @return array of dates groupped by proximity considering offset restrictions
      */
-    public static function groupDateTimeArray(array $dateTimeList,int $offset=3,CloserArguments $unity= CloserArguments::MONTHS):array{
-
-        //Amélioration de la lisibilité des conditions
-        //fonction de calcul si la différence entre deux dates dépasse l'offset défini
-        function isDifferenceOverflowingOffset(DateTimeImmutable $date1,DateTimeImmutable $date2,int $timestampOffset):bool
-        {
-            return $date2->getTimestamp() - $date1->getTimestamp() > $timestampOffset;
-        }
-
-        //fonction d'évaluation si la clée est la dernière du tableau
-        function isKeyLastOfArray(array $arrayToTest,int $keyToTest):bool
-        {
-            return $keyToTest == count($arrayToTest)-1;
-        }
-
-        // function arrayShouldBeSorted(array $dateTimeArray){
-
-        // }
+    public static function groupDateTimeArray(array $dateTimeList, int $offset = 3, CloserArguments $unity = CloserArguments::MONTHS): array
+    {
+        self::arrayShouldOnlyContainDateTimeImmutableElements($dateTimeList);
+        self::arrayShouldBeSortedOlderToYounger($dateTimeList);
 
         //calcul de l'offset en timestamp
-        $timestampOffset = self::calculateOffsetTimestamp($offset,$unity);
+        $timestampOffset = self::calculateOffsetTimestamp($offset, $unity);
 
         //Recherche des groupes de proximité
         $groups = [];
@@ -65,35 +109,33 @@ class Closer{
          * Pour chaque date dans la liste fournie
          * @var DateTime $date
          */
-        foreach($dateTimeList as $key1=>$date1){
+        foreach ($dateTimeList as $key1 => $date1) {
 
-            foreach($dateTimeList as $key2=>$date2){
+            foreach ($dateTimeList as $key2 => $date2) {
                 //passe les clées avant celle principale
-                if($key2 <= $key1){
+                if ($key2 <= $key1) {
                     continue;
                 }
                 //si la distance dépasse l'offset ou que nous sommes sur la dernière ittération et que la condition est toujours respectée
-                if(isDifferenceOverflowingOffset($date1,$date2,$timestampOffset) || (isKeyLastOfArray($dateTimeList,$key2) && !isDifferenceOverflowingOffset($date1,$date2,$timestampOffset))){
+                if (self::isDifferenceOverflowingOffset($date1, $date2, $timestampOffset) || (self::isKeyLastOfArray($dateTimeList, $key2) && !self::isDifferenceOverflowingOffset($date1, $date2, $timestampOffset))) {
                     $retainedDates = [];
-                    if(isKeyLastOfArray($dateTimeList,$key2) && !isDifferenceOverflowingOffset($date1,$date2,$timestampOffset)){
-                        $key2 ++;//ce qui revient à changer le signe "<" du for en dessous par un "<="
+                    if (self::isKeyLastOfArray($dateTimeList, $key2) && !self::isDifferenceOverflowingOffset($date1, $date2, $timestampOffset)) {
+                        $key2++; //ce qui revient à changer le signe "<" du for en dessous par un "<="
                     }
                     //on va parcourt l'ensemble des dates entre la date1 et la date2
-                    for ($i = $key1;$i<$key2;$i++){
+                    for ($i = $key1; $i < $key2; $i++) {
                         //on ajoute les clées au groupe
                         $retainedDates[] = $dateTimeList[$i];
                     }
                     //si l'échantillon contient au moins 2 dates
-                    if (count($retainedDates)>=2){
+                    if (count($retainedDates) >= 2) {
                         //on l'ajoute au groupe
                         $groups[] = $retainedDates;
                     }
                     break;
                 }
-
             }
         }
         return $groups;
-
     }
 }
