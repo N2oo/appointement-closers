@@ -58,13 +58,16 @@ class Closer
         return $keyToTest == count($arrayToTest) - 1;
     }
 
-    private static function arrayShouldBeSortedOlderToYounger(array $dateTimeArray)
+    private static function makeDateTimeImmutableArrayValidations(array $dateTimeImmutableArray)
     {
         $previousDate = null; 
         /**
          * @var DateTimeImmutable $testedDate
          */
-        foreach($dateTimeArray as $testedDate){
+        foreach($dateTimeImmutableArray as $testedDate){
+            if(!($testedDate instanceof DateTimeImmutable)){
+                throw new InvalidArgumentException("La liste soumise ne contient pas uniquement des éléments du type DateTimeImmutable");
+            }
             if(null === $previousDate){
                 $previousDate = $testedDate;
                 continue;
@@ -74,15 +77,6 @@ class Closer
             }
             $previousDate = $testedDate;
 
-        }
-    }
-
-    private static function arrayShouldOnlyContainDateTimeImmutableElements(array $dateTimeArray){
-        foreach($dateTimeArray as $pretentedDateTimeElement){
-            //si ce n'est pas un instance de DateTimeImmutable
-            if(!($pretentedDateTimeElement instanceof DateTimeImmutable)){
-                throw new InvalidArgumentException("La liste soumise ne contient pas uniquement des éléments du type DateTimeImmutable");
-            }
         }
     }
 
@@ -97,8 +91,9 @@ class Closer
      */
     public static function groupDateTimeArray(array $dateTimeList, int $offset = 3, CloserArguments $unity = CloserArguments::MONTHS): array
     {
-        self::arrayShouldOnlyContainDateTimeImmutableElements($dateTimeList);
-        self::arrayShouldBeSortedOlderToYounger($dateTimeList);
+        // self::arrayShouldOnlyContainDateTimeImmutableElements($dateTimeList);
+        // self::arrayShouldBeSortedOlderToYounger($dateTimeList);
+        self::makeDateTimeImmutableArrayValidations($dateTimeList);
 
         //calcul de l'offset en timestamp
         $timestampOffset = self::calculateOffsetTimestamp($offset, $unity);
