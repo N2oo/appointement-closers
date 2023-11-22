@@ -48,16 +48,27 @@ class Closer{
          * Pour chaque date dans la liste fournie
          * @var DateTime $date
          */
-        foreach($dateTimeList as $key=>$date){
-            $k = $key;
-            while(true){
-                //si l'écart entre la première date evaluée (du foreach) et la date contenue à $k est > l'offset
-                // la partie sur le $k est en prévention d'un bug sur les fins de liste
-                if($k > count($dateTimeList) - 1 || $dateTimeList[$k]->getTimestamp() - $date->getTimestamp() > $timestampOffset){
-                    // on créer un groupe entre la première date évaluée et la celle avant le dépassement de l'offset
+        foreach($dateTimeList as $key1=>$date1){
+
+            foreach($dateTimeList as $key2=>$date2){
+                //passe les clées avant celle principale
+                if($key2 <= $key1){
+                    continue;
+                }
+                //vérification des clés testées
+                //si la distance dépasse l'offset ou que nous sommes sur la dernière ittération et que la condition est toujours respectée
+                if($date2->getTimestamp() - $date1->getTimestamp() > $timestampOffset){
                     $retainedDates = [];
-                    //permet de parcourir tous les elements entre le premier élément ($key) et celui qui a fait dépassé l'offset ($k)
-                    for ($i = $key;$i<$k;$i++){
+                    for ($i = $key1;$i<$key2;$i++){
+                        $retainedDates[] = $dateTimeList[$i];
+                    }
+                    if (count($retainedDates)>1){
+                        $groups[] = $retainedDates;
+                    }
+                    break;
+                }else if($key2 == count($dateTimeList)-1 && $date2->getTimestamp() - $date1->getTimestamp() <= $timestampOffset){
+                    $retainedDates = [];
+                    for ($i = $key1;$i<=$key2;$i++){
                         $retainedDates[] = $dateTimeList[$i];
                     }
                     if (count($retainedDates)>1){
@@ -65,9 +76,29 @@ class Closer{
                     }
                     break;
                 }
-                //A chaque tour du while, on incrémente la clée suppérieure
-                $k++;
+
             }
+            
+
+            // $k = $key;
+            // while(true){
+            //     //si l'écart entre la première date evaluée (du foreach) et la date contenue à $k est > l'offset
+            //     // la partie sur le $k est en prévention d'un bug sur les fins de liste
+            //     if($k > count($dateTimeList) - 1 || $dateTimeList[$k]->getTimestamp() - $date->getTimestamp() > $timestampOffset){
+            //         // on créer un groupe entre la première date évaluée et la celle avant le dépassement de l'offset
+            //         $retainedDates = [];
+            //         //permet de parcourir tous les elements entre le premier élément ($key) et celui qui a fait dépassé l'offset ($k)
+            //         for ($i = $key;$i<$k;$i++){
+            //             $retainedDates[] = $dateTimeList[$i];
+            //         }
+            //         if (count($retainedDates)>1){
+            //             $groups[] = $retainedDates;
+            //         }
+            //         break;
+            //     }
+            //     //A chaque tour du while, on incrémente la clée suppérieure
+            //     $k++;
+            // }
         }
         return $groups;
 
