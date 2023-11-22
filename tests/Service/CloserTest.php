@@ -21,10 +21,62 @@ class CloserTest extends KernelTestCase{
         return $container->get(Closer::class);
     }
     
-    public function testCloserAlgorithm(){
+    /**
+     * @dataProvider provideDateTimeImmutableArrayAndExpectedResult
+     *
+     * @return void
+     */
+    public function testCloserAlgorithm($dateTimeList,$expected){
         //referer to ./public/schemaCloserProCorrected.png for further info
         $service = $this->getService();
+        
+        $result = $service::groupDateTimeArray($dateTimeList,3,CloserArguments::MONTHS);
 
+        $this->assertEquals($expected,$result);
+    }
+
+
+    private function provideUnsortedDateTimeImmutableArray()
+    {
+        $dateTimeList = [
+            (new DateTimeImmutable('2024-01-01 01:00:00')),
+            (new DateTimeImmutable('2024-02-01 01:00:00')),
+            (new DateTimeImmutable('2024-03-01 01:00:00')),
+            (new DateTimeImmutable('2024-04-01 01:00:00')),
+            (new DateTimeImmutable('2024-07-01 01:00:00')),
+            (new DateTimeImmutable('2024-05-01 01:00:00')),
+            (new DateTimeImmutable('2024-08-01 01:00:00')),
+            (new DateTimeImmutable('2024-10-01 01:00:00')),
+            (new DateTimeImmutable('2024-11-01 01:00:00')),
+            (new DateTimeImmutable('2024-12-01 01:00:00')),
+        ];
+        return [
+            [$dateTimeList]
+        ];
+    }
+    private function provideNotOnlyDateTimeImmutableArray()
+    {
+        $dateTimeList1 = [
+            (new DateTimeImmutable('2024-01-01 01:00:00')),
+            (new DateTime('2024-02-01 01:00:00')),
+        ];
+        $dateTimeList2 = [
+            (new DateTimeImmutable('2024-01-01 01:00:00')),
+            null,
+        ];
+        $dateTimeList3 = [
+            (new DateTimeImmutable('2024-01-01 01:00:00')),
+            14,
+        ];
+
+        return [
+            [$dateTimeList1],
+            [$dateTimeList2],
+            [$dateTimeList3],
+        ];
+    }
+
+    private function provideDateTimeImmutableArrayAndExpectedResult(){
         $dateTimeList = [
             (new DateTimeImmutable('2024-01-01 01:00:00')),
             (new DateTimeImmutable('2024-02-01 01:00:00')),
@@ -86,51 +138,8 @@ class CloserTest extends KernelTestCase{
                 new DateTimeImmutable('2024-12-01 01:00:00'),
             ]
         ];
-
-        
-        $result = $service::groupDateTimeArray($dateTimeList,3,CloserArguments::MONTHS);
-
-        $this->assertEquals($expected,$result);
-    }
-
-
-    private function provideUnsortedDateTimeImmutableArray()
-    {
-        $dateTimeList = [
-            (new DateTimeImmutable('2024-01-01 01:00:00')),
-            (new DateTimeImmutable('2024-02-01 01:00:00')),
-            (new DateTimeImmutable('2024-03-01 01:00:00')),
-            (new DateTimeImmutable('2024-04-01 01:00:00')),
-            (new DateTimeImmutable('2024-07-01 01:00:00')),
-            (new DateTimeImmutable('2024-05-01 01:00:00')),
-            (new DateTimeImmutable('2024-08-01 01:00:00')),
-            (new DateTimeImmutable('2024-10-01 01:00:00')),
-            (new DateTimeImmutable('2024-11-01 01:00:00')),
-            (new DateTimeImmutable('2024-12-01 01:00:00')),
-        ];
         return [
-            [$dateTimeList]
-        ];
-    }
-    private function provideNotOnlyDateTimeImmutableArray()
-    {
-        $dateTimeList1 = [
-            (new DateTimeImmutable('2024-01-01 01:00:00')),
-            (new DateTime('2024-02-01 01:00:00')),
-        ];
-        $dateTimeList2 = [
-            (new DateTimeImmutable('2024-01-01 01:00:00')),
-            null,
-        ];
-        $dateTimeList3 = [
-            (new DateTimeImmutable('2024-01-01 01:00:00')),
-            14,
-        ];
-
-        return [
-            [$dateTimeList1],
-            [$dateTimeList2],
-            [$dateTimeList3],
+            [$dateTimeList,$expected]
         ];
     }
 
@@ -142,7 +151,7 @@ class CloserTest extends KernelTestCase{
      * @param array $dateTimeList
      * @return void
      */
-    public function testDateTimeArrayShouldBeSortedOlderToYounger(array $dateTimeList)
+    public function testDateTimeArrayShouldBeSortedOlderToYounger(array $dateTimeList):void
     {
         $service = $this->getService();
         $this->expectException(InvalidArgumentException::class);
@@ -157,7 +166,7 @@ class CloserTest extends KernelTestCase{
      *
      * @return void
      */
-    public function testDateTimeArrayShouldOnlyContainDateTimeImmutableElement(array $dateTimeList)
+    public function testDateTimeArrayShouldOnlyContainDateTimeImmutableElement(array $dateTimeList):void
     {
         $service = $this->getService();
         $this->expectException(InvalidArgumentException::class);
