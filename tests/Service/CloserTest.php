@@ -6,7 +6,6 @@ use App\Service\Closer;
 use App\Service\Enumeration\CloserArguments;
 use DateTime;
 use DateTimeImmutable;
-use Doctrine\Common\Cache\Psr6\InvalidArgument;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
