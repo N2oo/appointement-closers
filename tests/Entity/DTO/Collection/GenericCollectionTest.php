@@ -5,24 +5,21 @@ namespace App\Tests\Entity\DTO\Collection;
 use App\Entity\DTO\Collection\GenericCollection;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class SampleObj
-{
+class SampleObj{
     public function __construct(
         public string $key = "hello"
-    ) {
-    }
+    ){}
 }
 
-class SampleObjBis
-{
+class SampleObjBis{
+
 }
 
 class GenericCollectionTest extends KernelTestCase
 {
-    private function getValidator(): ValidatorInterface
+    private function getValidator():ValidatorInterface
     {
         self::bootKernel();
         return static::getContainer()->get(ValidatorInterface::class);
@@ -30,9 +27,9 @@ class GenericCollectionTest extends KernelTestCase
 
     public function provideValidSampleObjAndInfo()
     {
-        $o0 = new SampleObj("0");
-        $o1 = new SampleObj("1");
-        $o2 = new SampleObj("2");
+        $o0= new SampleObj("0");
+        $o1= new SampleObj("1");
+        $o2= new SampleObj("2");
         $dataProvided = [
             $o0,
             $o1,
@@ -40,7 +37,7 @@ class GenericCollectionTest extends KernelTestCase
         ];
         $type = SampleObj::class;
         return [
-            [$dataProvided, $type]
+            [$dataProvided,$type]
         ];
     }
     //test de l'implémentation de l'interface Iterator
@@ -52,10 +49,10 @@ class GenericCollectionTest extends KernelTestCase
      * @param [type] $type
      * @return void
      */
-    public function testCurrent($dataProvided, $type)
-    {
-        $collection = new GenericCollection($dataProvided, $type);
-        $this->assertEquals($dataProvided[0], $collection->current());
+    public function testCurrent($dataProvided,$type){
+        $collection = new GenericCollection($dataProvided,$type);
+        $this->assertEquals($dataProvided[0],$collection->current());
+
     }
 
     /**
@@ -63,10 +60,9 @@ class GenericCollectionTest extends KernelTestCase
      *
      * @return void
      */
-    public function testKey($dataProvided, $type): void
-    {
-        $collection = new GenericCollection($dataProvided, $type);
-        $this->assertEquals(0, $collection->key());
+    public function testKey($dataProvided,$type):void{
+        $collection = new GenericCollection($dataProvided,$type);
+        $this->assertEquals(0,$collection->key());
     }
 
     /**
@@ -74,52 +70,50 @@ class GenericCollectionTest extends KernelTestCase
      *
      * @return void
      */
-    public function testNext($dataProvided, $type): void
-    {
-        $collection = new GenericCollection($dataProvided, $type);
+    public function testNext($dataProvided,$type):void{
+        $collection = new GenericCollection($dataProvided,$type);
         $collection->next();
-        $this->assertEquals(1, $collection->key());
+        $this->assertEquals(1,$collection->key());
     }
 
     /**
      * @dataProvider provideValidSampleObjAndInfo
      * @return void
      */
-    public function testRewind($dataProvided, $type): void
-    {
-        $collection = new GenericCollection($dataProvided, $type);
+    public function testRewind($dataProvided,$type):void{
+        $collection = new GenericCollection($dataProvided,$type);
         $collection->next();
         $collection->rewind();
-        $this->assertEquals(0, $collection->key());
+        $this->assertEquals(0,$collection->key());
     }
 
     /**
      * @dataProvider provideValidSampleObjAndInfo
      * @return void
      */
-    public function testValid($dataProvided, $type): void
-    {
-        $collection = new GenericCollection($dataProvided, $type);
+    public function testValid($dataProvided,$type):void{
+        $collection = new GenericCollection($dataProvided,$type);
         $this->assertTrue($collection->valid());
         $collection->next();
         $collection->next();
         $collection->next();
         $collection->next();
         $this->assertFalse($collection->valid());
+
     }
     //fin de test de l'implémentation de l'interface Iterator
 
 
-    public function testHandleDataAndGiveItBack()
-    {
+    public function testHandleDataAndGiveItBack(){
         $data = [
             new SampleObj(),
             new SampleObj(),
             new SampleObj()
         ];
-        $collection = new GenericCollection($data, SampleObj::class);
+        $collection = new GenericCollection($data,SampleObj::class);
         $return = $collection->getData();
-        $this->assertSame($data, $return);
+        $this->assertSame($data,$return);
+
     }
 
     public function testUnvalidIfNotOnlyExpectedType(): void
@@ -130,15 +124,13 @@ class GenericCollectionTest extends KernelTestCase
             new SampleObjBis(),
         ];
         $validator = $this->getValidator();
-        $collection = new GenericCollection($data, SampleObj::class);
-        $error = $validator->validate($collection, [new Assert\All(
-            [new Assert\Type(SampleObj::class)]
-        ), new Assert\Valid()]);
+        $collection = new GenericCollection($data,SampleObj::class);
+        $error = $validator->validate($collection);
         $error_count = count($error);
-        $this->assertEquals(1, $error_count);
+        $this->assertEquals(1,$error_count);
     }
 
-    public function testValidIfNotOnlyExpectedType(): void
+    public function testValidIfOnlyExpectedType():void
     {
         $data = [
             new SampleObj(),
@@ -146,12 +138,9 @@ class GenericCollectionTest extends KernelTestCase
             new SampleObj(),
         ];
         $validator = $this->getValidator();
-        $collection = new GenericCollection($data, SampleObj::class);
-        $error = $validator->validate($collection, [new Assert\All(
-            [new Assert\Type(SampleObj::class)]
-        ), new Assert\Valid()]);
-        $error_count = count($error);
-        $this->assertEquals(0, $error_count);
+        $collection = new GenericCollection($data,SampleObj::class);
+        $error = $validator->validate($collection);
+        $this->assertEmpty($error);
     }
 
     public function testAddElementToCollection()
@@ -162,12 +151,12 @@ class GenericCollectionTest extends KernelTestCase
             new SampleObj(),
         ];
         $type = SampleObj::class;
-        $collection = new GenericCollection($data, $type);
+        $collection = new GenericCollection($data,$type);
         $newElement = new SampleObj();
         $data[] = $newElement;
         $returned = $collection->add($newElement);
-        $this->assertSame($collection, $returned); //doit retourner elle même
-        $this->assertSame($data, $collection->getData()); //doit avoir faire les modifications
+        $this->assertSame($collection,$returned);//doit retourner elle même
+        $this->assertSame($data,$collection->getData());//doit avoir faire les modifications
     }
 
     public function testAddWrongElementToCollection()
@@ -180,9 +169,9 @@ class GenericCollectionTest extends KernelTestCase
         $type = SampleObj::class;
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(sprintf("L'élément passé en paramètre n'est pas du type attendu \"%s\"", $type));
+        $this->expectExceptionMessage(sprintf("L'élément passé en paramètre n'est pas du type attendu \"%s\"",$type));
 
-        $collection = new GenericCollection($data, $type);
+        $collection = new GenericCollection($data,$type);
         $newElement = new SampleObjBis();
         $data[] = $newElement;
         $collection->add($newElement);
@@ -190,9 +179,9 @@ class GenericCollectionTest extends KernelTestCase
 
     public function testReplaceElement()
     {
-        $o0 = new SampleObj("0");
-        $o1 = new SampleObj("1");
-        $o2 = new SampleObj("2");
+        $o0= new SampleObj("0");
+        $o1= new SampleObj("1");
+        $o2= new SampleObj("2");
         $dataProvided = [
             $o0,
             $o1,
@@ -205,19 +194,19 @@ class GenericCollectionTest extends KernelTestCase
             $o2
         ];
         $type = SampleObj::class;
-        $collection = new GenericCollection($dataProvided, $type);
+        $collection = new GenericCollection($dataProvided,$type);
 
-        $result = $collection->replace($newElement, 1);
+        $result = $collection->replace($newElement,1);
 
-        $this->assertSame($collection, $result); //assure le setter fluent
-        $this->assertSame($dataExpected, $result->getData());
+        $this->assertSame($collection,$result);//assure le setter fluent
+        $this->assertSame($dataExpected,$result->getData());
     }
 
     public function testReplaceWrongElement()
     {
-        $o0 = new SampleObj("0");
-        $o1 = new SampleObj("1");
-        $o2 = new SampleObj("2");
+        $o0= new SampleObj("0");
+        $o1= new SampleObj("1");
+        $o2= new SampleObj("2");
         $dataProvided = [
             $o0,
             $o1,
@@ -227,18 +216,18 @@ class GenericCollectionTest extends KernelTestCase
         $type = SampleObj::class;
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(sprintf("L'élément passé en paramètre n'est pas du type attendu \"%s\"", $type));
+        $this->expectExceptionMessage(sprintf("L'élément passé en paramètre n'est pas du type attendu \"%s\"",$type));
 
-        $collection = new GenericCollection($dataProvided, $type);
-        $result = $collection->replace($newElement, 1);
+        $collection = new GenericCollection($dataProvided,$type);
+        $result = $collection->replace($newElement,1);
     }
 
     public function testReplaceWrongIndex()
     {
         $key = 100;
-        $o0 = new SampleObj("0");
-        $o1 = new SampleObj("1");
-        $o2 = new SampleObj("2");
+        $o0= new SampleObj("0");
+        $o1= new SampleObj("1");
+        $o2= new SampleObj("2");
         $dataProvided = [
             $o0,
             $o1,
@@ -248,10 +237,10 @@ class GenericCollectionTest extends KernelTestCase
         $type = SampleObj::class;
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(sprintf("L'index (%d) fourni n'existe pas", $key));
+        $this->expectExceptionMessage(sprintf("L'index (%d) fourni n'existe pas",$key));
 
-        $collection = new GenericCollection($dataProvided, $type);
-        $result = $collection->replace($newElement, $key); //on donne un index inexistant
+        $collection = new GenericCollection($dataProvided,$type);
+        $result = $collection->replace($newElement,$key);//on donne un index inexistant
     }
 
 
@@ -259,12 +248,12 @@ class GenericCollectionTest extends KernelTestCase
      * @dataProvider provideValidSampleObjAndInfo
      * @return void
      */
-    public function testRemoveElementAndRearangeIt($dataProvided, $type): void
+    public function testRemoveElementAndRearangeIt($dataProvided,$type):void
     {
         //tester la suppression d'un element
-        $collection = new GenericCollection($dataProvided, $type);
+        $collection = new GenericCollection($dataProvided,$type);
 
-
+        
         $data = $collection->getData();
         $indexToRemove = 1;
         unset($data[$indexToRemove]);
@@ -272,47 +261,47 @@ class GenericCollectionTest extends KernelTestCase
 
         $return = $collection->remove($indexToRemove);
 
-        $this->assertEquals($collection, $return);
-        $this->assertEquals($data, $collection->getData());
+        $this->assertEquals($collection,$return);
+        $this->assertEquals($data,$collection->getData());
     }
 
     /**
      * @dataProvider provideValidSampleObjAndInfo
      * @return void
      */
-    public function testRemoveElementWrongIndex($dataProvided, $type): void
+    public function testRemoveElementWrongIndex($dataProvided,$type):void
     {
-        $collection = new GenericCollection($dataProvided, $type);
-
+        $collection = new GenericCollection($dataProvided,$type);
+        
         $data = $collection->getData();
         $indexToRemove = 1000;
         unset($data[$indexToRemove]);
         $data = array_values($data);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(sprintf("L'index (%d) fourni n'existe pas", $indexToRemove));
+        $this->expectExceptionMessage(sprintf("L'index (%d) fourni n'existe pas",$indexToRemove));
 
         $return = $collection->remove($indexToRemove);
     }
 
     public function provideUnsortedSampleObjAndInfo()
     {
-        $o0 = new SampleObj("0");
-        $o1 = new SampleObj("1");
-        $o2 = new SampleObj("2");
+        $o0= new SampleObj("0");
+        $o1= new SampleObj("1");
+        $o2= new SampleObj("2");
         $dataProvided = [
-            $o1, //1
-            $o0, //0
-            $o2 //2
+            $o1,//1
+            $o0,//0
+            $o2//2
         ];
         $type = SampleObj::class;
         $expectedOrder = [
-            $o0, //0
-            $o1, //1
-            $o2 //2
+            $o0,//0
+            $o1,//1
+            $o2//2
         ];
         return [
-            [$dataProvided, $type, $expectedOrder]
+            [$dataProvided,$type,$expectedOrder]
         ];
     }
 
@@ -320,15 +309,16 @@ class GenericCollectionTest extends KernelTestCase
      * @dataProvider provideUnsortedSampleObjAndInfo
      * @return void
      */
-    public function testSortElement($dataProvided, $type, $expectedOrder): void
+    public function testSortElement($dataProvided,$type,$expectedOrder):void
     {
-        $collection = new GenericCollection($dataProvided, $type);
+        $collection = new GenericCollection($dataProvided,$type);
         $return = $collection->sort(
-            function (SampleObj $arg1, SampleObj $arg2) {
-                return strcmp($arg1->key, $arg2->key);
+            function (SampleObj $arg1,SampleObj $arg2)
+            {
+                return strcmp($arg1->key,$arg2->key);
             }
         );
         $this->assertIsArray($return);
-        $this->assertSame($expectedOrder, $collection->getData());
+        $this->assertSame($expectedOrder,$collection->getData());
     }
 }

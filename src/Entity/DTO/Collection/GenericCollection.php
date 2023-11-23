@@ -53,12 +53,12 @@ class GenericCollection implements Iterator
     }
 
 
-    #[Assert\IsTrue(groups:['motherClass'])]
+    #[Assert\IsTrue()]
     private function isOnlyContainingClassNameElements():bool
     {
         foreach($this->data as $element){
             $className = $this->getClassName();
-            if($element instanceof $className){
+            if(!($element instanceof $className)){
                 return false;
             }
         }
