@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\DTO\Collection\DateTimeCustomCollectionDTO;
 use App\Service\Enumeration\CloserArguments;
 use DateInterval;
 use DateTime;
@@ -56,51 +57,18 @@ class Closer
         return $keyToTest == count($arrayToTest) - 1;
     }
 
-    /**
-     * fonction de Validation de l'argument tableau
-     * Valide que le tableau ne contient que des elements du type souhaité
-     * Valide que le tableau est ordonné dans le sens attendu
-     *
-     * @param array $dateTimeImmutableArray
-     * @return void
-     */
-    private static function makeDateTimeImmutableArrayValidations(array $dateTimeImmutableArray):void
-    {
-        $previousDate = null; 
-        /**
-         * @var DateTimeImmutable $testedDate
-         */
-        foreach($dateTimeImmutableArray as $testedDate){
-            if(!($testedDate instanceof DateTimeImmutable)){
-                throw new InvalidArgumentException("La liste soumise ne contient pas uniquement des éléments du type DateTimeImmutable");
-            }
-            if(null === $previousDate){
-                $previousDate = $testedDate;
-                continue;
-            }
-            if($testedDate < $previousDate){
-                throw new InvalidArgumentException("La liste soumise n'a pas été ordonnée dans l'ordre attendu");
-            }
-            $previousDate = $testedDate;
-
-        }
-    }
-
 
     /**
      * Group given DateTime considering given Offset
      *
-     * @param DateTimeImmutable[] $dateTimeList sorted from the older (index:0) to the younger (index:>0)
+     * @param DateTimeCustomCollectionDTO $dateTimeCustomCollection sorted from the older (index:0) to the younger (index:>0)
      * @param integer $offset
      * @param CloserArguments $unity
      * @return array of dates groupped by proximity considering offset restrictions
      */
-    public static function groupDateTimeArray(array $dateTimeList, int $offset = 3, CloserArguments $unity = CloserArguments::MONTHS): array
+    public static function groupDateTimeArray(DateTimeCustomCollectionDTO $dateTimeCustomCollection, int $offset = 3, CloserArguments $unity = CloserArguments::MONTHS): array
     {
-        // self::arrayShouldOnlyContainDateTimeImmutableElements($dateTimeList);
-        // self::arrayShouldBeSortedOlderToYounger($dateTimeList);
-        self::makeDateTimeImmutableArrayValidations($dateTimeList);
-
+        $dateTimeList = $dateTimeCustomCollection->exportToDateTimeImmutableArray();
         //calcul de l'offset en timestamp
         $timestampOffset = self::calculateOffsetTimestamp($offset, $unity);
 
