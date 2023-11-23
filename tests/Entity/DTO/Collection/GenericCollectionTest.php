@@ -2,7 +2,7 @@
 
 namespace App\Tests\Entity\DTO\Collection;
 
-use App\Entity\DTO\Collection\AbstractCollection;
+use App\Entity\DTO\Collection\GenericCollection;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -17,7 +17,7 @@ class SampleObjBis{
 
 }
 
-class AbstractCollectionTest extends KernelTestCase
+class GenericCollectionTest extends KernelTestCase
 {
     private function getValidator():ValidatorInterface
     {
@@ -50,7 +50,7 @@ class AbstractCollectionTest extends KernelTestCase
      * @return void
      */
     public function testCurrent($dataProvided,$type){
-        $collection = new AbstractCollection($dataProvided,$type);
+        $collection = new GenericCollection($dataProvided,$type);
         $this->assertEquals($dataProvided[0],$collection->current());
 
     }
@@ -61,7 +61,7 @@ class AbstractCollectionTest extends KernelTestCase
      * @return void
      */
     public function testKey($dataProvided,$type):void{
-        $collection = new AbstractCollection($dataProvided,$type);
+        $collection = new GenericCollection($dataProvided,$type);
         $this->assertEquals(0,$collection->key());
     }
 
@@ -71,7 +71,7 @@ class AbstractCollectionTest extends KernelTestCase
      * @return void
      */
     public function testNext($dataProvided,$type):void{
-        $collection = new AbstractCollection($dataProvided,$type);
+        $collection = new GenericCollection($dataProvided,$type);
         $collection->next();
         $this->assertEquals(1,$collection->key());
     }
@@ -81,7 +81,7 @@ class AbstractCollectionTest extends KernelTestCase
      * @return void
      */
     public function testRewind($dataProvided,$type):void{
-        $collection = new AbstractCollection($dataProvided,$type);
+        $collection = new GenericCollection($dataProvided,$type);
         $collection->next();
         $collection->rewind();
         $this->assertEquals(0,$collection->key());
@@ -92,7 +92,7 @@ class AbstractCollectionTest extends KernelTestCase
      * @return void
      */
     public function testValid($dataProvided,$type):void{
-        $collection = new AbstractCollection($dataProvided,$type);
+        $collection = new GenericCollection($dataProvided,$type);
         $this->assertTrue($collection->valid());
         $collection->next();
         $collection->next();
@@ -110,7 +110,7 @@ class AbstractCollectionTest extends KernelTestCase
             new SampleObj(),
             new SampleObj()
         ];
-        $collection = new AbstractCollection($data,SampleObj::class);
+        $collection = new GenericCollection($data,SampleObj::class);
         $return = $collection->getData();
         $this->assertSame($data,$return);
 
@@ -124,7 +124,7 @@ class AbstractCollectionTest extends KernelTestCase
             new SampleObjBis(),
         ];
         $validator = $this->getValidator();
-        $collection = new AbstractCollection($data,SampleObj::class);
+        $collection = new GenericCollection($data,SampleObj::class);
         $error = $validator->validate($collection,groups:["motherClass"]);
         $error_count = count($error);
         $this->assertSame(1,$error_count);
@@ -139,7 +139,7 @@ class AbstractCollectionTest extends KernelTestCase
             new SampleObj(),
         ];
         $type = SampleObj::class;
-        $collection = new AbstractCollection($data,$type);
+        $collection = new GenericCollection($data,$type);
         $newElement = new SampleObj();
         $data[] = $newElement;
         $returned = $collection->add($newElement);
@@ -159,7 +159,7 @@ class AbstractCollectionTest extends KernelTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(sprintf("L'élément passé en paramètre n'est pas du type attendu \"%s\"",$type));
 
-        $collection = new AbstractCollection($data,$type);
+        $collection = new GenericCollection($data,$type);
         $newElement = new SampleObjBis();
         $data[] = $newElement;
         $collection->add($newElement);
@@ -182,7 +182,7 @@ class AbstractCollectionTest extends KernelTestCase
             $o2
         ];
         $type = SampleObj::class;
-        $collection = new AbstractCollection($dataProvided,$type);
+        $collection = new GenericCollection($dataProvided,$type);
 
         $result = $collection->replace($newElement,1);
 
@@ -206,7 +206,7 @@ class AbstractCollectionTest extends KernelTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(sprintf("L'élément passé en paramètre n'est pas du type attendu \"%s\"",$type));
 
-        $collection = new AbstractCollection($dataProvided,$type);
+        $collection = new GenericCollection($dataProvided,$type);
         $result = $collection->replace($newElement,1);
     }
 
@@ -227,7 +227,7 @@ class AbstractCollectionTest extends KernelTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(sprintf("L'index (%d) fourni n'existe pas",$key));
 
-        $collection = new AbstractCollection($dataProvided,$type);
+        $collection = new GenericCollection($dataProvided,$type);
         $result = $collection->replace($newElement,$key);//on donne un index inexistant
     }
 
@@ -239,7 +239,7 @@ class AbstractCollectionTest extends KernelTestCase
     public function testRemoveElementAndRearangeIt($dataProvided,$type):void
     {
         //tester la suppression d'un element
-        $collection = new AbstractCollection($dataProvided,$type);
+        $collection = new GenericCollection($dataProvided,$type);
 
         
         $data = $collection->getData();
@@ -259,7 +259,7 @@ class AbstractCollectionTest extends KernelTestCase
      */
     public function testRemoveElementWrongIndex($dataProvided,$type):void
     {
-        $collection = new AbstractCollection($dataProvided,$type);
+        $collection = new GenericCollection($dataProvided,$type);
         
         $data = $collection->getData();
         $indexToRemove = 1000;
@@ -299,7 +299,7 @@ class AbstractCollectionTest extends KernelTestCase
      */
     public function testSortElement($dataProvided,$type,$expectedOrder):void
     {
-        $collection = new AbstractCollection($dataProvided,$type);
+        $collection = new GenericCollection($dataProvided,$type);
         $return = $collection->sort(
             function (SampleObj $arg1,SampleObj $arg2)
             {

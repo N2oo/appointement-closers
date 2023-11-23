@@ -6,7 +6,7 @@ use Iterator;
 use InvalidArgumentException;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class AbstractCollection implements Iterator
+class GenericCollection implements Iterator
 {
 
     // Interface Iterator
