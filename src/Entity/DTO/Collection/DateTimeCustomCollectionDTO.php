@@ -44,6 +44,17 @@ class DateTimeCustomCollectionDTO extends GenericCollection
         return $this;
     }
 
+    public function exportToDateTimeImmutableArray():array{
+        $transitionnedResult = [];
+        /**
+         * @var DateTimeCustomDTO $value
+         */
+        foreach($this as $value){
+            $transitionnedResult[] = $value->exportToDateTimeImmutable();
+        }
+        return $transitionnedResult;
+    }
+
 
 
 

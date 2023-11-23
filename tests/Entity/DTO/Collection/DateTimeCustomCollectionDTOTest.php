@@ -30,6 +30,21 @@ class DateTimeCustomCollectionDTOTest extends TestCase
         ];
     }
 
+    public function provideDataAndExpectedDateTimeArrayResult(){
+        $one = new DateTimeCustomDTO(1,1,1,1,1,1);
+        $two = new DateTimeCustomDTO(1,1,200,1,1,1);
+        $three = new DateTimeCustomDTO(1,1,500,1,1,1);
+        $dateTimeArray=[$one,$two,$three];
+        $expectedArray=[
+            $one->exportToDateTimeImmutable(),
+            $two->exportToDateTimeImmutable(),
+            $three->exportToDateTimeImmutable()
+        ];
+        return [
+            [$dateTimeArray,$expectedArray]
+        ];
+    }
+
     /**
      * @dataProvider provideDataSortedOlderToYounger
      *
@@ -58,6 +73,19 @@ class DateTimeCustomCollectionDTOTest extends TestCase
         $result = $collection->sortYoungerToOlder();
         $this->assertEquals($collection,$result);//vérifier que la méthode est fluent
         $this->assertEquals($expectedOrder,$collection->getData());
+    }
+
+    /**
+     * @dataProvider provideDataAndExpectedDateTimeArrayResult
+     *
+     * @return void
+     */
+    public function testExportingDataToDateTimeImmutable(array $dateTimeArray,array $expectedResult)
+    {
+        $collection = new DateTimeCustomCollectionDTO($dateTimeArray);
+        $result = $collection->exportToDateTimeImmutableArray();
+        $this->assertIsArray($result);
+        $this->assertEquals($expectedResult,$result);
     }
 
 
