@@ -5,9 +5,7 @@ namespace App\Tests\Entity\DTO;
 use App\Entity\DTO\DateTimeCustomDTO;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Constraints\Isbn;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Range;
 
 class DateTimeCustomDTOTest extends KernelTestCase

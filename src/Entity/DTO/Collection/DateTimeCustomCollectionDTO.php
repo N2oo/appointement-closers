@@ -1,6 +1,7 @@
 <?php
 namespace App\Entity\DTO\Collection;
 use App\Entity\DTO\DateTimeCustomDTO;
+
 class DateTimeCustomCollectionDTO
 {
     public function __construct(
@@ -20,6 +21,12 @@ class DateTimeCustomCollectionDTO
     {
         return $this->result;
     }
+
+
+    // #[Assert\IsTrue("La collection ne doit contenir que des éléments")]
+    // public function isOnlyContainingDateTimeCustomDTO(){
+
+    // }
 
 
 
