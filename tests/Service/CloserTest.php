@@ -97,7 +97,7 @@ class CloserTest extends KernelTestCase{
         //referer to ./public/schemaCloserProCorrected.png for further info
         $service = $this->getService();
         
-        $result = $service::groupDateTimeArray($dateTimeList,3,CloserArguments::MONTHS);
+        $result = $service::makeClosingSuggestions($dateTimeList,3,CloserArguments::MONTHS);
 
         $this->assertEquals($expected,$result);
     }

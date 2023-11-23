@@ -59,14 +59,14 @@ class Closer
 
 
     /**
-     * Group given DateTime considering given Offset
+     * Make Closing suggestions based on given DateTimeCustomCollectionDTO considering given Offset
      *
      * @param DateTimeCustomCollectionDTO $dateTimeCustomCollection sorted from the older (index:0) to the younger (index:>0)
      * @param integer $offset
      * @param CloserArguments $unity
      * @return array of dates groupped by proximity considering offset restrictions
      */
-    public static function groupDateTimeArray(DateTimeCustomCollectionDTO $dateTimeCustomCollection, int $offset = 3, CloserArguments $unity = CloserArguments::MONTHS): array
+    public static function makeClosingSuggestions(DateTimeCustomCollectionDTO $dateTimeCustomCollection, int $offset = 3, CloserArguments $unity = CloserArguments::MONTHS): array
     {
         $dateTimeList = $dateTimeCustomCollection->exportToDateTimeImmutableArray();
         //calcul de l'offset en timestamp
