@@ -32,15 +32,16 @@ class DateHandlingControllerTest extends WebTestCase
 
     public function testResponseDataIsSameAsGiven(): void
     {
-        $content = ["data"=>
-        [
-            ["year"=>1,
-            "month"=>1,
-            "day"=>1,
-            "hour"=>1,
-            "minute"=>1,
-            "second"=>1,]
-        ]];
+        $content = [
+            "data"=>
+                [
+                    ["year"=>1,
+                    "month"=>1,
+                    "day"=>1,
+                    "hour"=>1,
+                    "minute"=>1,
+                    "second"=>1,]
+                ]];
         $client = static::createClient();
         $crawler = $client->jsonRequest("POST","/make/suggestions",$content);
         $this->assertResponseIsSuccessful();
