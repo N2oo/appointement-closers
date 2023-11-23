@@ -6,9 +6,9 @@ use App\Entity\DTO\Collection\DateTimeCustomCollectionDTO;
 use App\Entity\DTO\DateTimeCustomDTO;
 use App\Service\Closer;
 use App\Service\Enumeration\CloserArguments;
+use App\Tests\Entity\DTO\Collection\DateTimeCustomCollectionDTOTest;
 use DateTime;
 use DateTimeImmutable;
-use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class CloserTest extends KernelTestCase{
@@ -120,6 +120,19 @@ class CloserTest extends KernelTestCase{
         return [
             [new DateTimeCustomCollectionDTO($dateTimeList)]
         ];
+    }
+
+    /**
+     * Le test permet de s'assurer que la collection est bien triée dans l'ordre voulu avant de réaliser son algorithme
+     *
+     * @return void
+     */
+    public function testMustSortCollectionElement(){
+        $mokedCollection = $this->createMock(DateTimeCustomCollectionDTO::class);
+        $mokedCollection->expects(self::once())
+        ->method("sortOlderToYounger");
+        $service = $this->getService();
+        $service::makeClosingSuggestions($mokedCollection);
     }
 
     

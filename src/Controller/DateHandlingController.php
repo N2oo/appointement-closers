@@ -20,7 +20,6 @@ class DateHandlingController extends AbstractController
         #[MapRequestPayload()] DateTimeCustomCollectionDTO $dateTimeCollection
     ): Response
     {
-        $dateTimeCollection->sortOlderToYounger();
         $suggestions = $this->closer::makeClosingSuggestions($dateTimeCollection);
         return $this->json($suggestions);
     }
