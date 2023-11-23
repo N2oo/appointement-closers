@@ -306,7 +306,7 @@ class AbstractCollectionTest extends KernelTestCase
                 return strcmp($arg1->key,$arg2->key);
             }
         );
-        $this->assertSame($collection,$return);
+        $this->assertIsArray($return);
         $this->assertSame($expectedOrder,$collection->getData());
     }
 }

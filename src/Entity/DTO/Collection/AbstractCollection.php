@@ -4,7 +4,6 @@ namespace App\Entity\DTO\Collection;
 
 use Iterator;
 use InvalidArgumentException;
-use phpDocumentor\Reflection\Types\Callable_;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class AbstractCollection implements Iterator
@@ -57,7 +56,7 @@ class AbstractCollection implements Iterator
     #[Assert\IsTrue(groups:['motherClass'])]
     private function isOnlyContainingClassNameElements():bool
     {
-        foreach($this->getData() as $element){
+        foreach($this->data as $element){
             $className = $this->getClassName();
             if($element instanceof $className){
                 return false;
@@ -75,7 +74,7 @@ class AbstractCollection implements Iterator
     }
 
     private function validateIndexConformity(int $index){
-        if($index > count($this->getData())-1){
+        if($index > count($this->data)-1){
             throw new InvalidArgumentException(sprintf("L'index (%d) fourni n'existe pas",$index));
         }
     }
@@ -103,9 +102,9 @@ class AbstractCollection implements Iterator
         return $this;
     }
 
-    public function sort(callable $compareFunction):self
+    public function sort(callable $compareFunction):array
     {
         usort($this->data,$compareFunction);
-        return $this;
+        return $this->data;
     }
 }
