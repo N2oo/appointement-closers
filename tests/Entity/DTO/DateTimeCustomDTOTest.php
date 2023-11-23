@@ -159,7 +159,7 @@ class DateTimeCustomDTOTest extends KernelTestCase
         $validator = $this->getValidator();
 
         $dateTimeCustom = new DateTimeCustomDTO(29,2,2017,1,1,1);//année non bissextile
-        $errors = $validator->validate($dateTimeCustom,groups:["leap"]);
+        $errors = $validator->validate($dateTimeCustom);
         $errorsCount= count($errors);
         $this->assertEquals(1,$errorsCount);
     }
@@ -168,7 +168,7 @@ class DateTimeCustomDTOTest extends KernelTestCase
 
         $dateTimeCustom = new DateTimeCustomDTO(29,2,2020,1,1,1);//année bissextile
         // $errors = $validator->validate($dateTimeCustom,new IsTrue(message:"La date soumise n'existe pas, vérifiez si l'année est bissextile"));
-        $errors = $validator->validate($dateTimeCustom,groups:["leap"]);
+        $errors = $validator->validate($dateTimeCustom);
         $errorsCount= count($errors);
         $this->assertEquals(0,$errorsCount);
     }

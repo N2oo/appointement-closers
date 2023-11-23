@@ -49,7 +49,7 @@ class DateTimeCustomDTO
     ) {
     }
 
-    #[Assert\IsTrue(message: "La date soumise n'existe pas, vérifiez si l'année est bissextile", groups: ["leap"])]
+    #[Assert\IsTrue(message: "La date n'existe pas, vérifiez si l'année est bissextile")]
     public function isValidDate(): bool
     {
         return checkdate($this->getMonth(), $this->getDay(), $this->getYear());
