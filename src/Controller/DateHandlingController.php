@@ -16,7 +16,7 @@ class DateHandlingController extends AbstractController
         
     }
     #[Route('/make/suggestions', name: 'app_suggestion_maker',methods:["POST"])]
-    public function index(
+    public function makeSuggestions(
         #[MapRequestPayload()] DateTimeCustomCollectionDTO $dateTimeCollection
     ): Response
     {
