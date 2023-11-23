@@ -1,6 +1,7 @@
 <?php
 namespace App\Entity\DTO\Collection;
 use App\Entity\DTO\DateTimeCustomDTO;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class DateTimeCustomCollectionDTO extends GenericCollection
 {
@@ -8,6 +9,12 @@ class DateTimeCustomCollectionDTO extends GenericCollection
         /**
          * @var DateTimeCustomDTO[] $data
          */
+        #[Assert\All(
+            [
+                new Assert\Type("App\Entity\DTO\DateTimeCustomDTO"),
+            ]
+        )]
+        #[Assert\Valid()]
         private array $data
     )
     {
@@ -23,7 +30,7 @@ class DateTimeCustomCollectionDTO extends GenericCollection
     {
         return $this->data;
     }
-
+    
 
     public function sortOlderToYounger():self
     {
