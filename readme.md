@@ -19,3 +19,7 @@ vous rapprochez les dates manuellement et vous réalisez que ce cas ne doit pas 
 [Fr] Le service appointementCloser (et plus précisément `App\Service\Closer`) attends les différentes dates (`$dateTimeList`), votre limite de rapprochement (`int $offset` + `App\Service\Enumeration\CloserArguments $unity`) et vous retourne un tableau contenant les différentes dates soumises rapprochées dans le respect de votre critère de rapprochement.
 
 Charge à vous de les intégrer dans votre système pour l'interogation, l'appréciation des suggestions ou leur validation.
+
+
+## Tips
+Run test code coverage using `php bin/phpunit --coverage-html ./public/coverage`
